@@ -1,4 +1,7 @@
 import { useState } from "react";
+import type { RootState } from './../store/store'
+import { useSelector, useDispatch } from 'react-redux'
+import {openAccount, closeAccount, withdraw, deposit, requestLoan, payLoan } from "./../store/slices/accountSlice"
 
 function AccountOperations() {
   const [depositAmount, setDepositAmount] = useState<string>("");
@@ -7,16 +10,35 @@ function AccountOperations() {
   const [loanPurpose, setLoanPurpose] = useState("");
   //const [currency, setCurrency] = useState("USD");
 
-  const handleOpenAccount = () => {}
-  const handleCloseAccount = () => {}
-  const handleWithdrawal = () => {}
-  const handleDeposit = () => {}
-  const handleRequestLoan = () => {}
-  const handlePayLoan = () => {}
+  const {balance, loan, loanPurposeStore, isActive}= useSelector((state: RootState) => state.account)
+  const dispatch = useDispatch()
+
+
+  const handleOpenAccount = () => {
+    dispatch(openAccount())
+  }
+  const handleCloseAccount = () => {
+    dispatch(closeAccount())
+  }
+  const handleWithdrawal = () => {
+    dispatch(withdraw(Number(withdrawalAmount)))
+  }
+  const handleDeposit = () => {
+    dispatch(deposit(Number(depositAmount)))
+  }
+  const handleRequestLoan = () => {
+    dispatch(requestLoan({amount: Number(loanAmount), purpose: loanPurpose }))
+  }
+
+  const handlePayLoan = () => {
+    dispatch(payLoan())
+  }
 
   return (
     <div>
       <h2>Your account operations</h2>
+      <p>Balance: {balance}</p>
+      <p>Loan: {loan}</p>
       <div className="inputs">
         <div>
           <label>Open Account</label>
@@ -95,14 +117,14 @@ function AccountOperations() {
           <button onClick={handleRequestLoan}>Request loan</button>
         </div>
 
-        {/* {currentLoan > 0 && (
+        {loan > 0 && (
         <div>
           <span>
-            Pay back ${currentLoan} ({currentLoanPurpose})
+            Pay back ${loan} ({loanPurposeStore})
           </span>
           <button onClick={handlePayLoan}>Pay loan</button>
         </div>
-      )} */}
+      )}
       </div>
     </div>
   );
